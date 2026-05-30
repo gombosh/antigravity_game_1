@@ -715,48 +715,147 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // -------------------------------------------------------------------------
-    // Screen 5: Game Stage 3 (Tap Ecosystem Rescue Grid)
+    // Screen 5: Game Stage 3 (Ecosystem Cleanup Mission)
     // -------------------------------------------------------------------------
     function initGame3() {
-        state.g3TimeRemaining = 30;
+        state.g3TimeRemaining = 40;
         state.g3Health = 100;
-        state.g3SavedCount = 0;
+        state.g3HazardsLeft = 10;
         state.g3ActiveSprites = [];
+
+        // Dynamically update game labels for cleanup theme
+        document.querySelector('#screen-game3 .subtitle').textContent = 
+            'משימת ניקוי: לחצו על כל המפגעים (רעל, מלכודות, זבל ומכוניות) כדי להסיר אותם! היזהרו שלא ללחוץ על חיות הבר או על דברים המועילים לטבע (עצים, פרחים ומים) כדי לא לפגוע בבריאות היער!';
+        document.querySelector('.stat-bubble span').textContent = 'מפגעים שנותרו:';
 
         dom.g3TimerVal.textContent = state.g3TimeRemaining;
         dom.g3HealthFill.style.width = '100%';
         dom.g3HealthVal.textContent = '100%';
-        dom.g3SavedVal.textContent = '0';
+        dom.g3SavedVal.textContent = state.g3HazardsLeft;
 
         clearG3Battleground();
 
-        // Level timer
+        // Spacing coordinator to prevent overlap
+        const placedPositions = [];
+        const battleground = dom.g3Battleground;
+        const rect = battleground.getBoundingClientRect();
+
+        function getSafeRandomPosition() {
+            let attempts = 0;
+            const minDistance = 75; // Pre-calculate safe spacing limits
+            const widthLimit = rect.width > 0 ? rect.width : 900;
+            const heightLimit = rect.height > 0 ? rect.height : 350;
+
+            while (attempts < 80) {
+                const x = 50 + Math.random() * (widthLimit - 120);
+                const y = 40 + Math.random() * (heightLimit - 100);
+
+                let isSafe = true;
+                for (let pos of placedPositions) {
+                    const dist = Math.hypot(x - pos.x, y - pos.y);
+                    if (dist < minDistance) {
+                        isSafe = false;
+                        break;
+                    }
+                }
+
+                if (isSafe) {
+                    placedPositions.push({ x, y });
+                    return { x, y };
+                }
+                attempts++;
+            }
+            // Fallback coordinate
+            return {
+                x: 50 + Math.random() * 600,
+                y: 40 + Math.random() * 250
+            };
+        }
+
+        // 1. Spawning 10 Hazards (מפגעים)
+        const hazardsList = [
+            { icon: '🧪', typeClass: 'threat-poison', damage: -10 },
+            { icon: '🕸️', typeClass: 'threat-trap', damage: -12 },
+            { icon: '🗑️', typeClass: 'threat-trash', damage: -8 },
+            { icon: '🚗', typeClass: 'threat-car', damage: -15 }
+        ];
+
+        for (let i = 0; i < state.g3HazardsLeft; i++) {
+            const pos = getSafeRandomPosition();
+            const hazardData = hazardsList[i % hazardsList.length];
+            
+            const el = document.createElement('div');
+            el.className = `game-sprite sprite-threat ${hazardData.typeClass}`;
+            el.style.left = `${pos.x}px`;
+            el.style.top = `${pos.y}px`;
+            el.innerHTML = hazardData.icon;
+
+            let cleared = false;
+            el.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                if (cleared) return;
+                cleared = true;
+
+                window.GameAudio.playClean();
+                updateScore(15);
+                window.Particles.spawn(pos.x + 30, pos.y + 30, 8, 'bubbles');
+                el.style.transform = 'scale(0)';
+                setTimeout(() => el.remove(), 200);
+
+                state.g3HazardsLeft--;
+                dom.g3SavedVal.textContent = state.g3HazardsLeft;
+
+                if (state.g3HazardsLeft === 0) {
+                    endG3(true);
+                }
+            });
+
+            battleground.appendChild(el);
+        }
+
+        // 2. Spawning 8 Good items (דברים טובים וחיות)
+        const goodIcons = ['🐆', '🦌', '🐊', '🐻', '🌳', '🌸', '💧'];
+        const totalGoodItems = 8;
+
+        for (let i = 0; i < totalGoodItems; i++) {
+            const pos = getSafeRandomPosition();
+            const icon = goodIcons[i % goodIcons.length];
+
+            const el = document.createElement('div');
+            el.className = 'game-sprite sprite-good';
+            el.style.left = `${pos.x}px`;
+            el.style.top = `${pos.y}px`;
+            el.innerHTML = icon;
+
+            el.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                window.GameAudio.playWrong();
+                updateScore(-5);
+                changeG3Health(-15);
+
+                // Strike penalty shake effect
+                el.classList.add('wrong-shake');
+                setTimeout(() => el.classList.remove('wrong-shake'), 400);
+            });
+
+            battleground.appendChild(el);
+        }
+
+        // 3. Start Level Countdown Timer
         clearInterval(state.g3Timer);
         state.g3Timer = setInterval(() => {
             state.g3TimeRemaining--;
             dom.g3TimerVal.textContent = state.g3TimeRemaining;
-            
+
             if (state.g3TimeRemaining <= 0) {
-                // Level Win!
-                endG3(true);
+                // Out of time
+                endG3(false);
             }
         }, 1000);
-
-        // Spawn loops
-        clearInterval(state.g3SpawnTimer);
-        state.g3SpawnTimer = setInterval(() => {
-            spawnG3Threat();
-        }, 900); // Spawn threat every 0.9s
-
-        clearInterval(state.g3AnimalTimer);
-        state.g3AnimalTimer = setInterval(() => {
-            spawnG3Animal();
-        }, 2200); // Spawn friendly animal every 2.2s
     }
 
     function clearG3Battleground() {
         const battleground = dom.g3Battleground;
-        // Keep the forest backdrop, remove all sprite children
         const sprites = battleground.querySelectorAll('.game-sprite');
         sprites.forEach(s => s.remove());
     }
@@ -766,162 +865,19 @@ document.addEventListener('DOMContentLoaded', () => {
         dom.g3HealthFill.style.width = `${state.g3Health}%`;
         dom.g3HealthVal.textContent = `${state.g3Health}%`;
 
-        // Style health track depending on health values
         if (state.g3Health < 40) {
-            dom.g3HealthFill.style.background = 'linear-gradient(90deg, #ef4444 0%, #f43f5e 100%)'; // Red danger
+            dom.g3HealthFill.style.background = 'linear-gradient(90deg, #ef4444 0%, #f43f5e 100%)';
         } else {
             dom.g3HealthFill.style.background = 'linear-gradient(90deg, #10b981 0%, #34d399 100%)';
         }
 
         if (state.g3Health <= 0) {
-            // Natural breakdown -> Level Fail
             endG3(false);
         }
     }
 
-    // Threats Models Spawning
-    const threatTypes = [
-        { name: 'poison', icon: '🧪', typeClass: 'threat-poison', damage: -10 },
-        { name: 'trap', icon: '🕸️', typeClass: 'threat-trap', damage: -12 },
-        { name: 'trash', icon: '🗑️', typeClass: 'threat-trash', damage: -8 },
-        { name: 'car', icon: '🚗', typeClass: 'threat-car', damage: -15 }
-    ];
-
-    function spawnG3Threat() {
-        const battleground = dom.g3Battleground;
-        const rect = battleground.getBoundingClientRect();
-        
-        // Random placement inside boundary limits
-        const x = 50 + Math.random() * (rect.width - 120);
-        const y = 40 + Math.random() * (rect.height - 100);
-
-        const threatData = threatTypes[Math.floor(Math.random() * threatTypes.length)];
-        
-        const el = document.createElement('div');
-        el.className = `game-sprite sprite-threat ${threatData.typeClass}`;
-        el.style.left = `${x}px`;
-        el.style.top = `${y}px`;
-        el.innerHTML = threatData.icon;
-        
-        let tapped = false;
-
-        // Click threat to neutralize it
-        el.addEventListener('pointerdown', (e) => {
-            e.stopPropagation();
-            if (tapped) return;
-            tapped = true;
-            
-            window.GameAudio.playClean();
-            updateScore(10);
-            
-            // Spawn clean bubbles
-            window.Particles.spawn(x + 30, y + 30, 8, 'bubbles');
-            
-            el.remove();
-        });
-
-        battleground.appendChild(el);
-
-        // Auto explode threat if left ignored
-        setTimeout(() => {
-            if (el.parentNode) {
-                // Flash warning animation before impact
-                el.style.animation = 'wrongShake 0.4s ease infinite';
-                setTimeout(() => {
-                    if (el.parentNode) {
-                        el.remove();
-                        // Explode damage!
-                        window.GameAudio.playWrong();
-                        changeG3Health(threatData.damage);
-                    }
-                }, 800);
-            }
-        }, 2200); // 2.2 seconds response limit
-    }
-
-    // Friendly animals models
-    const animalIcons = ['🐆', '🦌', '🐊'];
-
-    function spawnG3Animal() {
-        const battleground = dom.g3Battleground;
-        const rect = battleground.getBoundingClientRect();
-        
-        // Start animal from far left and make them walk to the right (RTL!)
-        // Wait, in RTL, let's start them from the right edge and walk left, or start left and walk right.
-        // Let's start them from the right edge (x = width) and walk left (towards x = 0).
-        const startX = rect.width - 50;
-        const y = 60 + Math.random() * (rect.height - 140);
-        const icon = animalIcons[Math.floor(Math.random() * animalIcons.length)];
-
-        const el = document.createElement('div');
-        el.className = 'game-sprite sprite-animal';
-        el.style.left = `${startX}px`;
-        el.style.top = `${y}px`;
-        el.innerHTML = icon;
-
-        let posX = startX;
-        let speed = 1.2 + Math.random() * 0.8;
-        let saved = false;
-
-        // Tapping friendly animal speeds it up safely to cross!
-        el.addEventListener('pointerdown', (e) => {
-            e.stopPropagation();
-            if (saved) return;
-            speed *= 2.5; // Boost speed!
-            window.GameAudio.playClean();
-            window.Particles.spawn(posX + 30, y + 30, 5, 'bubbles');
-        });
-
-        battleground.appendChild(el);
-
-        // Walk Animation interval
-        const walkInterval = setInterval(() => {
-            if (!el.parentNode) {
-                clearInterval(walkInterval);
-                return;
-            }
-
-            posX -= speed; // Move Leftward (RTL crossing)
-            el.style.left = `${posX}px`;
-
-            // Verify collision with active threat sprites
-            const threats = battleground.querySelectorAll('.sprite-threat');
-            threats.forEach(threat => {
-                const tX = parseFloat(threat.style.left);
-                const tY = parseFloat(threat.style.top);
-                const dist = Math.hypot(posX - tX, y - tY);
-                if (dist < 40) {
-                    // Collision! Threat hits animal
-                    threat.remove();
-                    el.remove();
-                    clearInterval(walkInterval);
-                    
-                    window.GameAudio.playWrong();
-                    changeG3Health(-15);
-                }
-            });
-
-            // Crossed safely!
-            if (posX <= 20) {
-                saved = true;
-                el.remove();
-                clearInterval(walkInterval);
-                
-                window.GameAudio.playCorrect();
-                state.g3SavedCount++;
-                dom.g3SavedVal.textContent = state.g3SavedCount;
-                updateScore(20);
-                
-                // Explode star sparkles at safety boundary
-                window.Particles.spawn(40, y + 30, 8, 'stars');
-            }
-        }, 20);
-    }
-
     function endG3(success) {
         clearInterval(state.g3Timer);
-        clearInterval(state.g3SpawnTimer);
-        clearInterval(state.g3AnimalTimer);
         clearG3Battleground();
 
         if (success) {
@@ -931,8 +887,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 changeScreen('screen-quiz');
             }, 1200);
         } else {
-            // Failed Ecosystem health -> Simple restart notification
-            alert('אוי לא! בריאות הטבע ירדה לאפס! בואו ננסה שוב לשמור על היער והכביש!');
+            if (state.g3Health <= 0) {
+                alert('אוי לא! בריאות הטבע ירדה לאפס בגלל פגיעה בחיות או בצמחים! בואו ננסה שוב לנקות את היער בזהירות!');
+            } else {
+                alert('הזמן נגמר! לא הספקתם להסיר את כל המפגעים בזמן. בואו ננסה שוב במהירות!');
+            }
             initGame3();
         }
     }
