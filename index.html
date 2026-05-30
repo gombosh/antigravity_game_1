@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>פורטל שומרי הטבע - מועדון חברים סגור</title>
+    <title>להצליח עם חיוך - פורטל משחקי למידה</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&family=Varela+Round&display=swap" rel="stylesheet">
@@ -261,6 +261,43 @@
             background: #ffffff;
             padding-top: 75px; /* Spaced to show exit bar */
         }
+
+        .login-banner {
+            width: 100%;
+            max-width: 360px;
+            height: auto;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            border: 2px solid #ffffff;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .lobby-banner {
+            height: 55px;
+            width: auto;
+            border-radius: 10px;
+            border: 2px solid #ffffff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .lobby-welcome-bar {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+                align-items: center;
+            }
+            .welcome-title {
+                text-align: center;
+            }
+            .lobby-banner {
+                order: -1; /* Place banner at the top on mobile */
+            }
+        }
     </style>
 </head>
 <body>
@@ -274,9 +311,9 @@
         <!-- 1. Authenticated Login Screen -->
         <section id="screen-login" class="screen active center-flow">
             <div class="login-card">
-                <span class="portal-logo">🔒</span>
-                <h1 style="font-size: 2rem; color: var(--color-primary-dark); font-weight: 900; text-align: center; margin-bottom: 6px;">כניסת שומרי הטבע</h1>
-                <p style="text-align: center; color: #64748b; font-size: 0.95rem; margin-bottom: 25px;">הקלידו את קוד הגישה שקיבלתם כדי להיכנס ללובי המשחקים</p>
+                <img src="banner.png" alt="להצליח עם חיוך" class="login-banner">
+                <h1 style="font-size: 1.7rem; color: var(--color-primary-dark); font-weight: 900; text-align: center; margin-bottom: 6px;">כניסת שותפים</h1>
+                <p style="text-align: center; color: #64748b; font-size: 0.95rem; margin-bottom: 25px;">הקלידו את קוד הגישה שקיבלתם כדי להיכנס ללובי משחקי הלמידה</p>
 
                 <div class="login-input-group">
                     <label for="p-username">שם משתמש:</label>
@@ -302,8 +339,9 @@
                 <div class="lobby-welcome-bar">
                     <div class="welcome-title">
                         <h2>שלום, <span id="lobby-user-display" style="color: var(--color-primary-dark);">gombosh</span>! 👋</h2>
-                        <p>מועדון שומרי הטבע פתוח בפניכם. בחרו משחק והתחילו הרפתקה מדהימה!</p>
+                        <p>ברוכים הבאים לפורטל משחקי הלמידה של להצליח עם חיוך. בחרו משחק והתחילו הרפתקה מדהימה!</p>
                     </div>
+                    <img src="banner.png" alt="להצליח עם חיוך" class="lobby-banner">
                     <button id="btn-logout" class="action-btn secondary-btn" style="padding: 8px 18px; font-size: 0.9rem;">
                         <span>יציאה 🚪</span>
                     </button>
