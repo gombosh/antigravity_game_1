@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מנהל שומרי הטבע - כלי אבטחה והצפנה מקומי</title>
+    <title>מנהל להצליח עם חיוך - כלי אבטחה וניהול משתמשים</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&family=Varela+Round&display=swap" rel="stylesheet">
@@ -11,9 +11,11 @@
         :root {
             --color-primary: #10b981;
             --color-primary-dark: #047857;
-            --color-bg-grad: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --color-primary-light: #d1fae5;
+            --color-accent: #f43f5e;
             --color-text-dark: #1f2937;
             --font-kids: 'Varela Round', 'Rubik', sans-serif;
+            --shadow-premium: 0 10px 30px rgba(0,0,0,0.05);
         }
         * {
             box-sizing: border-box;
@@ -22,18 +24,18 @@
         }
         body {
             font-family: var(--font-kids);
-            background: var(--color-bg-grad);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             color: var(--color-text-dark);
             min-height: 100vh;
             padding: 40px 20px;
         }
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             background: #ffffff;
-            border-radius: 24px;
+            border-radius: 28px;
             padding: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            box-shadow: var(--shadow-premium);
             border: 4px solid var(--color-primary-light);
         }
         h1 {
@@ -41,6 +43,7 @@
             margin-bottom: 8px;
             font-size: 2.2rem;
             text-align: center;
+            font-weight: 900;
         }
         .subtitle {
             text-align: center;
@@ -51,17 +54,18 @@
         .section-card {
             background: #f8fafc;
             border: 2px solid #e2e8f0;
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 24px;
             margin-bottom: 30px;
             text-align: right;
         }
         .section-card h2 {
-            font-size: 1.3rem;
+            font-size: 1.35rem;
             color: var(--color-primary-dark);
             margin-bottom: 16px;
             border-bottom: 2px dashed #cbd5e1;
             padding-bottom: 8px;
+            font-weight: 800;
         }
         .input-group {
             margin-bottom: 16px;
@@ -73,6 +77,16 @@
             font-weight: 700;
             font-size: 0.95rem;
             color: #475569;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        @media (min-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr 1fr;
+            }
         }
         input[type="text"], input[type="password"], textarea {
             font-family: var(--font-kids);
@@ -100,11 +114,64 @@
             cursor: pointer;
             transition: all 0.2s;
             margin-top: 8px;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
         .action-btn:hover {
             background: var(--color-primary-dark);
             transform: translateY(-2px);
+        }
+        .btn-danger {
+            background: var(--color-accent);
+        }
+        .btn-danger:hover {
+            background: #be123c;
+        }
+        /* Users Dashboard Table */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            background: #ffffff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+        th, td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #cbd5e1;
+            font-size: 0.95rem;
+        }
+        th {
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 800;
+        }
+        tr:hover {
+            background: #f8fafc;
+        }
+        .pass-toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+        .action-icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: transform 0.2s;
+        }
+        .action-icon-btn:hover {
+            transform: scale(1.15);
         }
         .result-box {
             margin-top: 16px;
@@ -119,92 +186,302 @@
             direction: ltr;
             text-align: left;
             border: 2px solid #334155;
-            max-height: 200px;
+            max-height: 250px;
             overflow-y: auto;
         }
         .copy-btn {
             background: #334155;
             color: #ffffff;
             border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
             cursor: pointer;
-            margin-top: 8px;
+            margin-top: 12px;
             font-family: var(--font-kids);
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
         .copy-btn:hover {
             background: #475569;
+        }
+        .empty-label {
+            text-align: center;
+            color: #94a3b8;
+            padding: 30px;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>מנהל שומרי הטבע - כלי אבטחה</h1>
-        <p class="subtitle">כלי מקומי ומאובטח להצפנת משחקים ויצירת קודי משתמשים חדשים באמצעות דפדפן האינטרנט (ללא תלויות שרת).</p>
+        <h1>להצליח עם חיוך - ניהול פורטל</h1>
+        <p class="subtitle">לוח בקרה סודי ומקומי לניהול לקוחות, חשיפת סיסמאות, מחיקת משתמשים והצפנת משחקים חדשים.</p>
 
-        <!-- Section 1: Create user credentials -->
+        <!-- Master Key configuration (Global state) -->
         <div class="section-card">
-            <h2>🔑 יצירת קוד גישה למשתמש חדש</h2>
+            <h2>🔑 הגדרת מפתח מאסטר (Master Key)</h2>
+            <p style="color: #64748b; font-size: 0.88rem; margin-bottom: 12px;">מפתח המאסטר משמש להצפנת האבטחה של האתר. נא להקליד אותו תחילה (ברירת המחדל הנוכחית היא: <strong style="color:var(--color-primary-dark);">antigravity123</strong>):</p>
+            <div class="input-group" style="margin-bottom:0;">
+                <input type="password" id="global-master-key" placeholder="הקלד את מפתח המאסטר של האתר (nature123)" value="antigravity123" oninput="updateMasterKey()">
+            </div>
+        </div>
+
+        <!-- Section 1: User Database Dashboard -->
+        <div class="section-card">
+            <h2>👥 ניהול משתמשים ולקוחות רשומים</h2>
             
-            <div class="input-group">
-                <label>מפתח מאסטר סודי (Master Key):</label>
-                <input type="password" id="u-master-key" placeholder="הקלד את מפתח המאסטר של האתר (למשל nature123)">
+            <!-- Create User Form inline -->
+            <div class="form-row" style="margin-bottom: 20px;">
+                <div class="input-group">
+                    <label for="new-username">שם משתמש חדש:</label>
+                    <input type="text" id="new-username" placeholder="למשל: yossi" autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label for="new-password">סיסמת כניסה ללקוח:</label>
+                    <input type="text" id="new-password" placeholder="למשל: secret456" autocomplete="off">
+                </div>
             </div>
-            
-            <div class="input-group">
-                <label>שם המשתמש החדש (אנגלית/עברית ללא רווחים):</label>
-                <input type="text" id="u-username" placeholder="למשל: yossi">
+            <button class="action-btn" onclick="addNewUser()">
+                <span>הוסף משתמש חדש ➕</span>
+            </button>
+
+            <!-- Users list table -->
+            <div class="table-responsive">
+                <table id="users-table">
+                    <thead>
+                        <tr>
+                            <th>שם משתמש</th>
+                            <th>סיסמת כניסה (לחצו לחשיפה)</th>
+                            <th style="width: 100px; text-align: center;">פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                        <!-- Table populated dynamically -->
+                    </tbody>
+                </table>
             </div>
 
-            <div class="input-group">
-                <label>הסיסמה של המשתמש החדש:</label>
-                <input type="text" id="u-password" placeholder="למשל: secret456">
-            </div>
-
-            <button class="action-btn" onclick="generateUserCredentials()">צור שורת קוד למשתמש</button>
-
-            <div id="u-result-wrapper" style="display: none;">
-                <div class="result-box" id="u-result"></div>
-                <button class="copy-btn" onclick="copyText('u-result')">העתק שורת קוד</button>
+            <!-- Ready JSON Export Box -->
+            <div style="margin-top: 30px;">
+                <label style="color: var(--color-primary-dark); font-size: 1.05rem; font-weight: 800;">
+                    📋 קוד מוכן להעתקה והדבקה ב-index.html:
+                </label>
+                <p style="color: #64748b; font-size: 0.85rem; margin-top: 4px; margin-bottom: 12px;">העתיקו את גוש הקוד הבא, והדביקו אותו בתוך קובץ `index.html` במקום רשימת המשתמשים הישנה (בסביבות שורה 365, בתוך הבלוק `const users = { ... };`):</p>
+                <div class="result-box" id="users-json-output"></div>
+                <button class="copy-btn" onclick="copyText('users-json-output')">
+                    <span>העתק קוד משתמשים מלא 📋</span>
+                </button>
             </div>
         </div>
 
         <!-- Section 2: Encrypt Game HTML File -->
         <div class="section-card">
-            <h2>📦 הצפנת קובץ HTML של משחק</h2>
+            <h2>📦 הצפנת קובץ HTML של משחק חדש</h2>
+            <p style="color: #64748b; font-size: 0.88rem; margin-bottom: 12px;">השתמשו בכלי זה כדי להצפין משחק HTML שלם לתוך קובץ טקסט מוצפן ready-to-use לפורטל.</p>
             
-            <div class="input-group">
-                <label>מפתח מאסטר סודי (Master Key):</label>
-                <input type="password" id="g-master-key" placeholder="הקלד את מפתח המאסטר של האתר">
-            </div>
-
             <div class="input-group">
                 <label>העלה קובץ משחק (HTML):</label>
                 <input type="file" id="g-file" accept=".html">
             </div>
 
-            <button class="action-btn" onclick="encryptGameFile()">הצפן קובץ משחק!</button>
+            <button class="action-btn" onclick="encryptGameFile()">
+                <span>הצפן קובץ משחק! 🔒</span>
+            </button>
 
             <div id="g-result-wrapper" style="display: none; margin-top: 16px;">
                 <label>קוד מוצפן מוכן לשמירה בתיקייה (games/gameX.crypt.txt):</label>
-                <div class="result-box" id="g-result" style="max-height: 150px;"></div>
-                <button class="action-btn" style="background:#0284c7;" onclick="downloadEncryptedFile()">הורד קובץ מוצפן מוכן! 📥</button>
+                <div class="result-box" id="g-result" style="max-height: 120px;"></div>
+                <button class="action-btn" style="background:#0284c7;" onclick="downloadEncryptedFile()">
+                    <span>הורד קובץ מוצפן מוכן! 📥</span>
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Cryptography implementations using Web Crypto API -->
     <script>
-        // Helper: Convert array buffer to Hex string
+        // Global variables
+        let masterKey = 'antigravity123';
+        let usersDb = {};
+
+        // Load users database from localStorage on startup
+        window.addEventListener('DOMContentLoaded', () => {
+            const stored = localStorage.getItem('smile_portal_users');
+            if (stored) {
+                try {
+                    usersDb = JSON.parse(stored);
+                } catch(e) {
+                    usersDb = {};
+                }
+            } else {
+                // Seed database with default gombosh/pashosh if empty
+                usersDb = {
+                    "gombosh": {
+                        password: "pashosh",
+                        salt: "f88f5c3d5360dc3a36eb91e617586569",
+                        iv: "fbd6d8184b919fa8efa59d62",
+                        encryptedKey: "097e6eb785d6f2cb8dcc89ca152e7eb289eda5902776b2f1e08a45863287"
+                    }
+                };
+                saveUsersToStorage();
+            }
+            
+            updateMasterKey();
+            renderUsersTable();
+        });
+
+        function updateMasterKey() {
+            masterKey = document.getElementById('global-master-key').value;
+        }
+
+        function saveUsersToStorage() {
+            localStorage.setItem('smile_portal_users', JSON.stringify(usersDb));
+        }
+
+        // Render visual table dashboard
+        function renderUsersTable() {
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = '';
+
+            const usernames = Object.keys(usersDb);
+
+            if (usernames.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="empty-label">אין לקוחות רשומים כרגע. צרו לקוח חדש למעלה!</td></tr>`;
+                updateJsonOutput();
+                return;
+            }
+
+            usernames.forEach(username => {
+                const user = usersDb[username];
+                const tr = document.createElement('tr');
+
+                // Toggle Password Visibility Eye logic
+                tr.innerHTML = `
+                    <td style="font-weight:700; color:var(--color-primary-dark);">${username}</td>
+                    <td>
+                        <span class="password-text" id="pass-${username}" style="-webkit-text-security: disc; font-size:1.1rem; font-family:monospace;">${user.password}</span>
+                        <button class="pass-toggle-btn" onclick="togglePasswordVisibility('${username}')" aria-label="הצג/הסתר סיסמה">👁️</button>
+                    </td>
+                    <td style="text-align: center;">
+                        <button class="action-icon-btn btn-danger" onclick="deleteUser('${username}')" title="מחק משתמש">🗑️</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            updateJsonOutput();
+        }
+
+        function togglePasswordVisibility(username) {
+            const el = document.getElementById(`pass-${username}`);
+            if (el) {
+                if (el.style.webkitTextSecurity === 'disc' || el.style.textSecurity === 'disc') {
+                    el.style.webkitTextSecurity = 'none';
+                    el.style.textSecurity = 'none';
+                } else {
+                    el.style.webkitTextSecurity = 'disc';
+                    el.style.textSecurity = 'disc';
+                }
+            }
+        }
+
+        // Action: Add new user
+        async function addNewUser() {
+            const usernameInput = document.getElementById('new-username');
+            const passwordInput = document.getElementById('new-password');
+
+            const username = usernameInput.value.trim().toLowerCase();
+            const password = passwordInput.value.trim();
+
+            if (!masterKey) {
+                alert('נא להגדיר מפתח מאסטר תחילה!');
+                return;
+            }
+            if (!username || !password) {
+                alert('אנא מלאו שם משתמש וסיסמה עבור הלקוח החדש!');
+                return;
+            }
+            if (usersDb[username]) {
+                alert('שם המשתמש כבר קיים במערכת!');
+                return;
+            }
+
+            try {
+                // Perform AES-GCM encryption natively
+                const enc = new TextEncoder();
+                const salt = crypto.getRandomValues(new Uint8Array(16));
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+
+                const derivedKey = await deriveKeyFromPassword(password, salt);
+
+                const encryptedBuffer = await crypto.subtle.encrypt(
+                    { name: "AES-GCM", iv: iv },
+                    derivedKey,
+                    enc.encode(masterKey)
+                );
+
+                // Add to database
+                usersDb[username] = {
+                    password: password, // Persisted locally for reveal!
+                    salt: bufferToHex(salt),
+                    iv: bufferToHex(iv),
+                    encryptedKey: bufferToHex(encryptedBuffer)
+                };
+
+                saveUsersToStorage();
+                renderUsersTable();
+
+                // Reset inputs
+                usernameInput.value = '';
+                passwordInput.value = '';
+            } catch (err) {
+                alert('שגיאה ביצירת משתמש: ' + err.message);
+            }
+        }
+
+        // Action: Delete user
+        function deleteUser(username) {
+            if (username === 'gombosh') {
+                if (!confirm('האם אתה בטוח שברצונך למחוק את משתמש ברירת המחדל (gombosh)?')) return;
+            } else {
+                if (!confirm(`האם למחוק את המשתמש ${username}?`)) return;
+            }
+
+            delete usersDb[username];
+            saveUsersToStorage();
+            renderUsersTable();
+        }
+
+        // Update JSON ready-to-copy code
+        function updateJsonOutput() {
+            const exportDb = {};
+            // Filter out plain passwords for safe GitHub upload!
+            Object.keys(usersDb).forEach(username => {
+                const u = usersDb[username];
+                exportDb[username] = {
+                    salt: u.salt,
+                    iv: u.iv,
+                    encryptedKey: u.encryptedKey
+                };
+            });
+
+            const jsonStr = JSON.stringify(exportDb, null, 4);
+            const output = `const users = ${jsonStr};`;
+            
+            document.getElementById('users-json-output').textContent = output;
+        }
+
+        // Cryptography Core Helpers
         function bufferToHex(buffer) {
             return Array.from(new Uint8Array(buffer))
                 .map(b => b.toString(16).padStart(2, '0'))
                 .join('');
         }
 
-        // Helper: Convert Hex string to typed Uint8Array
         function hexToBuffer(hex) {
             const bytes = new Uint8Array(hex.length / 2);
             for (let i = 0; i < bytes.length; i++) {
@@ -213,7 +490,6 @@
             return bytes.buffer;
         }
 
-        // Helper: PBKDF2 Password Derivation Key
         async function deriveKeyFromPassword(password, salt) {
             const enc = new TextEncoder();
             const baseKey = await crypto.subtle.importKey(
@@ -237,54 +513,14 @@
             );
         }
 
-        // Action: Generate user credentials
-        async function generateUserCredentials() {
-            const masterKeyText = document.getElementById('u-master-key').value;
-            const username = document.getElementById('u-username').value.trim().toLowerCase();
-            const password = document.getElementById('u-password').value.trim();
-
-            if (!masterKeyText || !username || !password) {
-                alert('נא למלא את כל השדות!');
-                return;
-            }
-
-            try {
-                const enc = new TextEncoder();
-                const salt = crypto.getRandomValues(new Uint8Array(16));
-                const iv = crypto.getRandomValues(new Uint8Array(12));
-
-                const derivedKey = await deriveKeyFromPassword(password, salt);
-
-                const encryptedBuffer = await crypto.subtle.encrypt(
-                    { name: "AES-GCM", iv: iv },
-                    derivedKey,
-                    enc.encode(masterKeyText)
-                );
-
-                const credentials = {
-                    salt: bufferToHex(salt),
-                    iv: bufferToHex(iv),
-                    encryptedKey: bufferToHex(encryptedBuffer)
-                };
-
-                const outputCode = `"${username}": ${JSON.stringify(credentials, null, 4)},`;
-                
-                document.getElementById('u-result').textContent = outputCode;
-                document.getElementById('u-result-wrapper').style.display = 'block';
-            } catch (err) {
-                alert('שגיאה ביצירת משתמש: ' + err.message);
-            }
-        }
-
         let encryptedGameTextBlob = '';
 
         // Action: Encrypt Game File
         async function encryptGameFile() {
-            const masterKeyText = document.getElementById('g-master-key').value;
             const fileInput = document.getElementById('g-file');
 
-            if (!masterKeyText || !fileInput.files.length) {
-                alert('נא להקליד מפתח מאסטר ולבחור קובץ HTML!');
+            if (!masterKey || !fileInput.files.length) {
+                alert('נא להגדיר מפתח מאסטר ולבחור קובץ HTML!');
                 return;
             }
 
@@ -298,8 +534,7 @@
                     const salt = crypto.getRandomValues(new Uint8Array(16));
                     const iv = crypto.getRandomValues(new Uint8Array(12));
 
-                    // Derive AES-GCM Key directly from master key (using SHA-256 hashing to get 256-bit key)
-                    const hashBuffer = await crypto.subtle.digest("SHA-256", enc.encode(masterKeyText));
+                    const hashBuffer = await crypto.subtle.digest("SHA-256", enc.encode(masterKey));
                     const key = await crypto.subtle.importKey(
                         "raw",
                         hashBuffer,
@@ -322,7 +557,7 @@
 
                     encryptedGameTextBlob = JSON.stringify(finalPayload);
                     
-                    document.getElementById('g-result').textContent = encryptedGameTextBlob.substring(0, 500) + '... (סך הכל ' + encryptedGameTextBlob.length + ' תווים מוצפנים)';
+                    document.getElementById('g-result').textContent = encryptedGameTextBlob.substring(0, 400) + '... (סך הכל ' + encryptedGameTextBlob.length + ' תווים)';
                     document.getElementById('g-result-wrapper').style.display = 'block';
                 } catch (err) {
                     alert('שגיאה בהצפנת הקובץ: ' + err.message);
@@ -332,7 +567,6 @@
             reader.readAsText(file);
         }
 
-        // Action: Download encrypted file
         function downloadEncryptedFile() {
             if (!encryptedGameTextBlob) return;
             const blob = new Blob([encryptedGameTextBlob], { type: 'text/plain;charset=utf-8' });
@@ -342,11 +576,10 @@
             a.click();
         }
 
-        // Copy helper
         function copyText(elementId) {
             const text = document.getElementById(elementId).textContent;
             navigator.clipboard.writeText(text);
-            alert('הקוד הועתק ללוח!');
+            alert('הקוד הועתק ללוח בהצלחה!');
         }
     </script>
 </body>
