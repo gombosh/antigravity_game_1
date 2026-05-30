@@ -9,7 +9,7 @@ const path = require('path');
 const crypto = require('crypto');
 
 // Configurations
-const masterKeyText = 'antigravity123'; // Default Master Key
+const masterKeyText = 'smileSuccessMaster2026!'; // Default Master Key
 const outputDir = path.join(__dirname, 'games');
 const outputFile = path.join(outputDir, 'game1.crypt.txt');
 
