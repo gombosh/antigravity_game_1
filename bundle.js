@@ -15,7 +15,7 @@ const outputFile = path.join(outputDir, 'game1.crypt.txt');
 
 // 1. Load raw file assets
 console.log('Loading raw assets...');
-const rawHTML = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+const rawHTML = fs.readFileSync(path.join(__dirname, 'backup_game1.html'), 'utf8');
 const rawCSS = fs.readFileSync(path.join(__dirname, 'style.css'), 'utf8');
 const rawAudioJS = fs.readFileSync(path.join(__dirname, 'js', 'audio.js'), 'utf8');
 const rawParticlesJS = fs.readFileSync(path.join(__dirname, 'js', 'particles.js'), 'utf8');
@@ -45,8 +45,8 @@ ${rawGameJS}
 
 standaloneHTML = standaloneHTML.replace(scriptsPattern, scriptTagsReplacement);
 
-// Backup original index.html as backup_game1.html if needed (to keep original source intact)
-fs.writeFileSync(path.join(__dirname, 'backup_game1.html'), rawHTML, 'utf8');
+// backup_game1.html is now the source, so we do not overwrite it!
+
 
 // 3. Encrypt standalone HTML using AES-256-GCM
 console.log('Encrypting bundle using AES-256-GCM...');
