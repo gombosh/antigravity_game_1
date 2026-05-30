@@ -315,21 +315,23 @@
                 <h1 style="font-size: 1.7rem; color: var(--color-primary-dark); font-weight: 900; text-align: center; margin-bottom: 6px;">כניסת תלמידים</h1>
                 <p style="text-align: center; color: #64748b; font-size: 0.95rem; margin-bottom: 25px;">הקלידו את קוד הגישה שקיבלתם כדי להיכנס ללובי משחקי הלמידה</p>
 
-                <div class="login-input-group">
-                    <label for="p-username">שם משתמש:</label>
-                    <input type="text" id="p-username" class="portal-input" placeholder="למשל: gombosh" autocomplete="off">
-                </div>
+                <form id="portal-login-form" onsubmit="event.preventDefault();">
+                    <div class="login-input-group">
+                        <label for="p-username">שם משתמש:</label>
+                        <input type="text" id="p-username" class="portal-input" placeholder="למשל: gombosh" autocomplete="off" required>
+                    </div>
 
-                <div class="login-input-group">
-                    <label for="p-password">קוד גישה (סיסמה):</label>
-                    <input type="password" id="p-password" class="portal-input" placeholder="הקלידו סיסמה..." autocomplete="off">
-                </div>
+                    <div class="login-input-group">
+                        <label for="p-password">קוד גישה (סיסמה):</label>
+                        <input type="password" id="p-password" class="portal-input" placeholder="הקלידו סיסמה..." autocomplete="off" required>
+                    </div>
 
-                <div id="login-error" class="error-message">שם משתמש או סיסמה שגויים! ❌</div>
+                    <div id="login-error" class="error-message">שם משתמש או סיסמה שגויים! ❌</div>
 
-                <button id="btn-portal-login" class="action-btn primary-btn pulse-glow" style="width: 100%; justify-content: center; margin-top: 10px;">
-                    <span>התחברות מאובטחת 🔑</span>
-                </button>
+                    <button type="submit" id="btn-portal-login" class="action-btn primary-btn pulse-glow" style="width: 100%; justify-content: center; margin-top: 10px;">
+                        <span>התחברות מאובטחת 🔑</span>
+                    </button>
+                </form>
             </div>
         </section>
 
@@ -419,6 +421,7 @@
             screens: document.querySelectorAll('.screen'),
             
             // Login view
+            loginForm: document.getElementById('portal-login-form'),
             usernameField: document.getElementById('p-username'),
             passwordField: document.getElementById('p-password'),
             btnLogin: document.getElementById('btn-portal-login'),
@@ -530,7 +533,8 @@
         // -------------------------------------------------------------------------
         // Event Listeners: Login
         // -------------------------------------------------------------------------
-        dom.btnLogin.addEventListener('click', async () => {
+        dom.loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
             const username = dom.usernameField.value;
             const password = dom.passwordField.value;
             
