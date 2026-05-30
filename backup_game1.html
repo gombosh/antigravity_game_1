@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>שומרי הטבע - משחק משימת הצלת חיות הבר</title>
+    <!-- Google Fonts for children-friendly Hebrew typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&family=Varela+Round&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Main Game Container -->
+    <div id="game-viewport">
+        <!-- Floating Particle Canvas overlay -->
+        <canvas id="particle-canvas"></canvas>
+
+        <!-- Sound & HUD Controls (Global overlay) -->
+        <div id="global-hud">
+            <button id="toggle-mute" class="hud-btn" aria-label="השתק/הפעל קול">
+                <svg id="sound-on-icon" class="hud-svg" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                <svg id="sound-off-icon" class="hud-svg hidden" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.21.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+            </button>
+            <div id="hud-stats" class="hidden">
+                <div class="hud-stat-item">
+                    <span class="hud-stat-label">ניקוד:</span>
+                    <span id="hud-score" class="hud-stat-val">0</span>
+                </div>
+                <div class="hud-stat-item">
+                    <span class="hud-stat-label">משימה:</span>
+                    <span id="hud-level-name" class="hud-stat-val">1/4</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. Start Screen -->
+        <section id="screen-start" class="screen active">
+            <div class="start-bg-decor"></div>
+            <div class="screen-content center-flow">
+                <div class="logo-container animate-bounce-slow">
+                    <!-- Shield SVG Icon representing Nature Guardians -->
+                    <svg class="guardians-shield" viewBox="0 0 100 120" width="120" height="144">
+                        <defs>
+                            <linearGradient id="shield-grad" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#34d399"/>
+                                <stop offset="100%" stop-color="#059669"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M50 5 L90 25 V65 C90 90, 50 115, 50 115 C50 115, 10 90, 10 65 V25 Z" fill="url(#shield-grad)" filter="drop-shadow(0px 8px 16px rgba(0,0,0,0.15))"/>
+                        <path d="M50 12 L82 28 V60 C82 82, 50 103, 50 103 C50 103, 18 82, 18 60 V28 Z" fill="#ffffff" opacity="0.15"/>
+                        <!-- Golden Star in shield -->
+                        <polygon points="50,32 55,43 67,43 57,51 61,63 50,55 39,63 43,51 33,43 45,43" fill="#fbbf24"/>
+                        <!-- Leaf overlay representing nature -->
+                        <path d="M50 78 C35 78, 30 60, 50 48 C70 60, 65 78, 50 78 Z" fill="#fbbf24"/>
+                        <path d="M50 48 V78" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                
+                <h1 class="game-title">שומרי הטבע</h1>
+                <p class="game-subtitle">משימה מיוחדת: להציל את חיות הבר בישראל!</p>
+                
+                <div class="name-input-container">
+                    <label for="player-name-field" class="name-label">הקלידו את שמכם, שומרי טבע צעירים:</label>
+                    <input type="text" id="player-name-field" placeholder="שמכם כאן..." max-length="15" autocomplete="off">
+                </div>
+
+                <button id="start-play-btn" class="action-btn primary-btn pulse-glow">
+                    <span>בואו נתחיל במשימה!</span>
+                    <svg class="btn-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                </button>
+                
+                <div class="animals-illustration-bar">
+                    <!-- Cute SVG animals -->
+                    <span class="deco-animal bear">🐻</span>
+                    <span class="deco-animal leopard">🐆</span>
+                    <span class="deco-animal croc">🐊</span>
+                    <span class="deco-animal deer">🦌</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Briefing Screen (Interactive Text Reading) -->
+        <section id="screen-briefing" class="screen">
+            <div class="screen-content flex-layout">
+                <div class="briefing-header">
+                    <h2>תדרוך המשימה: מי יציל את חיות הבר?</h2>
+                    <p class="subtitle">קיראו את המידע החשוב כדי לדעת איך לעזור לחיות ברחבי הארץ!</p>
+                </div>
+
+                <div class="briefing-slides-container">
+                    <!-- Comic slide content dynamically populated in JS -->
+                    <div id="briefing-slide" class="briefing-slide-card active-slide">
+                        <!-- Slide Content will go here -->
+                    </div>
+                </div>
+
+                <div class="briefing-controls">
+                    <button id="briefing-prev" class="briefing-nav-btn secondary-btn" disabled>
+                        <svg class="btn-arrow-rtl" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                        <span>הקודם</span>
+                    </button>
+                    
+                    <div id="briefing-dots" class="slideshow-dots">
+                        <!-- Dots rendered dynamically -->
+                    </div>
+
+                    <button id="briefing-next" class="briefing-nav-btn primary-btn">
+                        <span>המשך</span>
+                        <svg class="btn-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Game Stage 1: True / False Sorting Swiper -->
+        <section id="screen-game1" class="screen">
+            <div class="screen-content flex-layout">
+                <div class="stage-header">
+                    <span class="stage-badge">שלב 1 מתוך 3</span>
+                    <h2>מבחן המהירות: עובדות או שמועות?</h2>
+                    <p class="subtitle">גררו את קלפי הטענות לסלים הנכונים במהירות! האם הטענה נכונה או לא נכונה?</p>
+                </div>
+
+                <!-- Timer & Progress -->
+                <div class="game-hud-bar">
+                    <div class="progress-container">
+                        <div class="progress-bar-track">
+                            <div id="g1-progress-bar" class="progress-bar-fill" style="width: 0%;"></div>
+                        </div>
+                        <span id="g1-progress-text" class="progress-text">קלף 1 / 5</span>
+                    </div>
+                    <div class="timer-display animate-pulse">
+                        <span class="timer-icon">⏰</span>
+                        <span id="g1-timer-val">15</span>
+                    </div>
+                </div>
+
+                <!-- Play Board for drag cards -->
+                <div id="g1-board" class="board-area">
+                    <div id="g1-card-container">
+                        <!-- Draggable card will spawn here -->
+                    </div>
+                </div>
+
+                <!-- Targets/Baskets Area -->
+                <div class="sorting-bins-container">
+                    <div id="bin-true" class="sort-bin bin-green" data-value="true">
+                        <div class="bin-content">
+                            <span class="bin-icon">✅</span>
+                            <span class="bin-title">נכון מאוד!</span>
+                        </div>
+                        <div class="bin-ripple"></div>
+                    </div>
+
+                    <div id="bin-false" class="sort-bin bin-red" data-value="false">
+                        <div class="bin-content">
+                            <span class="bin-icon">❌</span>
+                            <span class="bin-title">לא נכון!</span>
+                        </div>
+                        <div class="bin-ripple"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Game Stage 2: Cause & Effect Snap Puzzle -->
+        <section id="screen-game2" class="screen">
+            <div class="screen-content flex-layout">
+                <div class="stage-header">
+                    <span class="stage-badge">שלב 2 מתוך 3</span>
+                    <h2>חיבור פאזל: סיבה ותוצאה</h2>
+                    <p class="subtitle">גררו כל סיבה בצד ימין (צהוב) אל התוצאה המתאימה לה בצד שמאל (ירוק). עזרו לקשר בין פעולות האדם לגורל החיות!</p>
+                </div>
+
+                <!-- Puzzle Board Layout -->
+                <div class="puzzle-game-board">
+                    <div class="puzzle-column" id="puzzle-draggables-col">
+                        <h3 class="column-title">סיבות (גררו מכאן)</h3>
+                        <div class="puzzle-items-list" id="puzzle-causes-container">
+                            <!-- Draggable causes dynamic -->
+                        </div>
+                    </div>
+                    
+                    <div class="puzzle-column" id="puzzle-targets-col">
+                        <h3 class="column-title">תוצאות (הניחו כאן)</h3>
+                        <div class="puzzle-items-list" id="puzzle-effects-container">
+                            <!-- Snap targets dynamic -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="center-flow margin-top">
+                    <button id="game2-submit-btn" class="action-btn primary-btn disabled" disabled>
+                        <span>בדקו את הפאזל!</span>
+                        <svg class="btn-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Game Stage 3: Tap Rescue Game -->
+        <section id="screen-game3" class="screen">
+            <div class="screen-content flex-layout">
+                <div class="stage-header">
+                    <span class="stage-badge">שלב 3 מתוך 3</span>
+                    <h2>מבצע הצלה בשטח!</h2>
+                    <p class="subtitle">אוי לא! חיות בר בסכנה ביער ובכביש! לחצו במהירות על מפגעים (מלכודות, רעל, זבל, מכוניות מהירות) כדי להשמיד אותם, ולחצו על חיות הבר כדי לכוון אותן למקום מבטחים!</p>
+                </div>
+
+                <!-- Dynamic Dashboard -->
+                <div class="game-hud-bar">
+                    <div class="ecosystem-health-container">
+                        <span class="health-label">בריאות הטבע:</span>
+                        <div class="health-bar-track">
+                            <div id="g3-health-fill" class="health-bar-fill" style="width: 100%;"></div>
+                        </div>
+                        <span id="g3-health-val" class="health-percentage">100%</span>
+                    </div>
+                    <div class="level-stats">
+                        <div class="stat-bubble">
+                            <span>מפגעים שנותרו:</span>
+                            <strong id="g3-saved-val">10</strong>
+                        </div>
+                        <div class="stat-bubble">
+                            <span>זמן נותר:</span>
+                            <strong id="g3-timer-val">30</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2D Interactive Grid Landscape -->
+                <div id="g3-battleground" class="battleground-viewport">
+                    <div class="forest-bg-illustration"></div>
+                    <!-- Live sprites will spawn here dynamically via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Graduation Quiz Screen -->
+        <section id="screen-quiz" class="screen">
+            <div class="screen-content flex-layout">
+                <div class="stage-header">
+                    <span class="stage-badge">מבחן ההסמכה</span>
+                    <h2>חידון הסמכת שומרי הטבע</h2>
+                    <p class="subtitle">ענו על השאלות הבאות בהצלחה כדי לזכות בתעודת השומר הרשמית שלכם!</p>
+                </div>
+
+                <div class="quiz-progress-bar">
+                    <div class="progress-bar-track">
+                        <div id="quiz-progress-fill" class="progress-bar-fill" style="width: 25%;"></div>
+                    </div>
+                    <span id="quiz-progress-text" class="progress-text">שאלה 1 מתוך 4</span>
+                </div>
+
+                <div class="quiz-card-container">
+                    <div id="quiz-card" class="quiz-question-card">
+                        <h3 id="quiz-question-text" class="quiz-question">מה פירוש המילה "יכחדו"?</h3>
+                        <div id="quiz-options-list" class="quiz-options-grid">
+                            <!-- Options buttons rendered dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. Victory & Certificate Screen -->
+        <section id="screen-victory" class="screen">
+            <div class="screen-content center-flow">
+                <div class="victory-header-animation animate-bounce-slow">
+                    <span class="victory-medal">🏆</span>
+                </div>
+                
+                <h2 class="victory-title">מזל טוב, כל הכבוד!</h2>
+                <p class="victory-subtitle">השלמתם את כל שלבי המשימה בהצלחה והצלתם את חיות הבר בישראל!</p>
+                
+                <!-- On-Screen SVG Certificate -->
+                <div id="printable-certificate-container" class="certificate-frame shadow-effect">
+                    <div class="certificate-border">
+                        <div class="certificate-inner">
+                            <div class="cert-header">
+                                <span class="cert-leaf-deco">🌿</span>
+                                <h3>תעודת שומר טבע מוסמך</h3>
+                                <span class="cert-leaf-deco">🌿</span>
+                            </div>
+                            
+                            <p class="cert-awarded">תעודה זו מוענקת בגאווה רבה ל:</p>
+                            <h4 id="cert-player-name" class="cert-name">ישראל ישראלי</h4>
+                            
+                            <p class="cert-reason">
+                                על השלמת "משימת הצלת חיות הבר", הפגנת ידע יוצא מן הכלל בהגנה על הטבע,
+                                מניעת זיהום, פירוק מלכודות ציידים ושמירה על חיות הבר של ישראל.
+                            </p>
+                            
+                            <div class="cert-footer">
+                                <div class="cert-sign">
+                                    <div class="cert-signature-line"></div>
+                                    <span>עיתון "פשוש"</span>
+                                </div>
+                                <div class="cert-stamp">
+                                    <svg viewBox="0 0 100 100" width="80" height="80">
+                                        <circle cx="50" cy="50" r="45" fill="none" stroke="#22c55e" stroke-width="4" stroke-dasharray="2 2"/>
+                                        <circle cx="50" cy="50" r="38" fill="none" stroke="#15803d" stroke-width="2"/>
+                                        <text x="50" y="45" font-family="'Varela Round', sans-serif" font-size="10" font-weight="bold" fill="#15803d" text-anchor="middle">מוגן!</text>
+                                        <text x="50" y="60" font-family="'Varela Round', sans-serif" font-size="10" font-weight="bold" fill="#16a34a" text-anchor="middle">שומר טבע</text>
+                                    </svg>
+                                </div>
+                                <div class="cert-sign">
+                                    <div class="cert-signature-line"></div>
+                                    <span>רשות שומרי הטבע</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Final Interactive Action Buttons -->
+                <div class="victory-actions-bar">
+                    <button id="btn-print-cert" class="action-btn secondary-btn">
+                        <span>הדפסת תעודה 🖨️</span>
+                    </button>
+                    <button id="btn-restart-game" class="action-btn primary-btn pulse-glow">
+                        <span>לשחק שוב! 🔄</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Script imports -->
+    <script src="js/audio.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
