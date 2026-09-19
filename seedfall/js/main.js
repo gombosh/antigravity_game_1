@@ -17,10 +17,17 @@ const api = {
     sync();
   },
   setFlag(name, value) { state.flags[name] = value; sync(); },
-  unlockEra(eraId) { state.unlockedEras[eraId] = true; sync(); },
-  markDirty(eraId) {
-    state.dirtyEras = state.dirtyEras || {};
-    if (eraId !== state.era) state.dirtyEras[eraId] = true;
+  unlockEra(eraId, planetId) {
+    state.unlockedEras[planetId || state.planet][eraId] = true;
+    sync();
+  },
+  unlockPlanet(planetId) { state.unlockedPlanets[planetId] = true; sync(); },
+  markDirty(eraId, planetId) {
+    const pid = planetId || state.planet;
+    const key = pid + ':' + eraId;
+    if (!(pid === state.planet && eraId === state.eraByPlanet[state.planet])) {
+      state.dirtyEras[key] = true;
+    }
     sync();
   },
   addCodex(title, text) { state.codex.push({ title, text }); sync(); },
@@ -35,14 +42,21 @@ const api = {
 const handlers = {
   onHotspot(hs) { hs.onTap(state, api); },
   onJump(eraId) {
-    if (!state.unlockedEras[eraId]) return;
-    state.era = eraId;
-    if (state.dirtyEras) delete state.dirtyEras[eraId];
+    if (!state.unlockedEras[state.planet][eraId]) return;
+    state.eraByPlanet[state.planet] = eraId;
+    delete state.dirtyEras[state.planet + ':' + eraId];
     state.armedItem = null;
     sync();
   },
   onInventoryTap(itemId) {
     state.armedItem = (state.armedItem === itemId) ? null : itemId;
+    sync();
+  },
+  onTravel(planetId) {
+    if (!state.unlockedPlanets[planetId]) return;
+    state.planet = planetId;
+    state.armedItem = null;
+    el('map-panel').classList.add('hidden');
     sync();
   }
 };
@@ -57,6 +71,14 @@ el('codex-btn').addEventListener('click', () => {
 });
 el('codex-close').addEventListener('click', () => {
   el('codex-panel').classList.add('hidden');
+});
+
+el('map-btn').addEventListener('click', () => {
+  renderSystemMap(state, handlers);
+  el('map-panel').classList.remove('hidden');
+});
+el('map-close').addEventListener('click', () => {
+  el('map-panel').classList.add('hidden');
 });
 
 renderAll(state, handlers);

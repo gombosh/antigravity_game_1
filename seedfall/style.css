@@ -22,7 +22,8 @@ html, body {
 }
 #planet-name { font-weight: 700; letter-spacing: 2px; font-size: 14px; opacity: 0.85; }
 #era-name { font-size: 13px; letter-spacing: 3px; opacity: 0.6; }
-#codex-btn {
+.statusbar-btns { display: flex; gap: 4px; }
+#codex-btn, #map-btn {
   background: none; border: none; font-size: 20px; color: inherit; padding: 4px 8px; cursor: pointer;
 }
 
@@ -37,6 +38,12 @@ html, body {
 #scene.era-present  { background: radial-gradient(circle at 50% 25%, #1c3a4a, #06141c 80%); }
 #scene.era-ruin      { background: radial-gradient(circle at 50% 25%, #12222b, #01080a 80%); }
 #scene.era-present.crisis { background: radial-gradient(circle at 50% 25%, #4a2318, #1a0603 80%); }
+
+/* Caer: a volcanic forge-world — distinct palette from Ondine's water world */
+#scene.planet-caer.era-genesis { background: radial-gradient(circle at 50% 25%, #3a1810, #140503 80%); }
+#scene.planet-caer.era-rise    { background: radial-gradient(circle at 50% 25%, #4a2a12, #1a0e04 80%); }
+#scene.planet-caer.era-present { background: radial-gradient(circle at 50% 25%, #5a3a14, #221204 80%); }
+#scene.planet-caer.era-present.crisis { background: radial-gradient(circle at 50% 25%, #6a1e10, #200502 80%); }
 
 .hotspot {
   position: absolute; transform: translate(-50%, -50%);
@@ -74,6 +81,19 @@ html, body {
 .panel-header { display: flex; justify-content: space-between; align-items: center; font-weight: 700; letter-spacing: 2px; margin-bottom: 12px; }
 .codex-entry { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 14px; line-height: 1.5; }
 .codex-entry .codex-title { font-weight: 700; margin-bottom: 4px; color: #9fd8c0; }
+
+#map-panel { top: 0; padding-top: calc(16px + env(safe-area-inset-top)); }
+.planet-card {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px; border-radius: 12px; margin-bottom: 10px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+}
+.planet-card.locked { opacity: 0.45; }
+.planet-card.current { border-color: #7fffd4; }
+.planet-card .planet-icon { font-size: 32px; }
+.planet-card .planet-info { flex: 1; }
+.planet-card .planet-info .p-name { font-weight: 700; letter-spacing: 1px; margin-bottom: 2px; }
+.planet-card .planet-info .p-desc { font-size: 12px; opacity: 0.7; }
 
 /* ---------- Modals ---------- */
 .modal {

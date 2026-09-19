@@ -12,7 +12,10 @@
   <header id="statusbar">
     <div id="planet-name">ONDINE</div>
     <div id="era-name">PRESENT</div>
-    <button id="codex-btn" title="Codex">📜</button>
+    <div class="statusbar-btns">
+      <button id="map-btn" title="System Map">🌌</button>
+      <button id="codex-btn" title="Codex">📜</button>
+    </div>
   </header>
 
   <main id="scene"></main>
@@ -49,6 +52,14 @@
       <button id="codex-close" class="btn btn-small">✕</button>
     </div>
     <div id="codex-entries"></div>
+  </div>
+
+  <div id="map-panel" class="panel hidden">
+    <div class="panel-header">
+      <span>SYSTEM MAP</span>
+      <button id="map-close" class="btn btn-small">✕</button>
+    </div>
+    <div id="map-planets"></div>
   </div>
 
   <div id="toast" class="hidden"></div>

@@ -18,12 +18,20 @@ const ITEMS = {
     icon: '🗿',
     type: 'object',
     desc: 'A small buried idol telling settlers that spirits — not the reed itself — protect their water. Someone placed this deliberately, long before you arrived. It bears a faint mark you do not recognize.'
+  },
+  warden_cipher: {
+    name: 'Warden Cipher',
+    icon: '🗝️',
+    type: 'scroll',
+    desc: 'A fire-etched cipher, pulled from a cache the Sea-Spirit Idol unlocked. It reads like an instruction, not a record — a method for marking a world, not a story about one.'
   }
 };
 
 const PLANETS = {
   ondine: {
     name: 'ONDINE',
+    icon: '🌊',
+    blurb: 'A tidal world. Its harbor town survives on what you seed into its marsh, generations back.',
     eraOrder: ['genesis', 'rise', 'present', 'ruin'],
     eras: {
 
@@ -114,6 +122,7 @@ const PLANETS = {
 
       present: {
         label: 'PRESENT',
+        crisis: (s) => !s.flags.reedPlanted,
         hotspots: [
           {
             id: 'elder', x: 30, y: 60, icon: '🧓', label: 'Elder', type: 'npc',
@@ -138,8 +147,9 @@ const PLANETS = {
                 api.dialogue('Healer', 'We keep records now, cultivate the reed deliberately, understand what it does and why. There’s a mark on the old idol we dug up — not one of ours. Something else has been shaping this place.');
                 if (!s.flags.endingSeen) {
                   api.setFlag('endingSeen', true);
-                  api.addCodex('Someone Was Here First', 'Every world you’ll visit may carry the same mark. Ondine was tended — and quietly steered — long before you arrived. Planet Two awaits on the System Map.');
-                  api.toast('Ondine’s story is complete. New destinations may be waiting.');
+                  api.unlockPlanet('caer');
+                  api.addCodex('Someone Was Here First', 'Every world you’ll visit may carry the same mark. Ondine was tended — and quietly steered — long before you arrived. A second world, Caer, is now reachable from the System Map.');
+                  api.toast('A new destination has appeared on the System Map.');
                 }
               }
             }
@@ -182,12 +192,123 @@ const PLANETS = {
               if (!s.flags.reedPlanted) api.examine('The harbor town, fully submerged. Whatever happened here, it happened generations after the crisis you just witnessed in the present.');
               else api.examine('The harbor never drowned. Reed-woven breakwaters, generations old, still hold back the tide.');
             }
+          },
+          {
+            id: 'old-marker', x: 25, y: 40, icon: '🪧', label: 'Old Marker',
+            visible: (s) => s.flags.idolTaken,
+            glow: (s) => s.armedItem === 'warden_cipher' && !s.flags.cipherSeeded,
+            armedTarget: (s) => s.armedItem === 'warden_cipher' && !s.flags.cipherSeeded,
+            onTap: (s, api) => {
+              if (s.armedItem === 'warden_cipher' && !s.flags.cipherSeeded) {
+                api.confirm('Seed the Warden Cipher into this marker? It will finally explain the mark you found here.', () => {
+                  api.consumeArmedItem();
+                  api.setFlag('cipherSeeded', true);
+                  api.addCodex('The Wardens’ Purpose', 'The cipher and the marker match: the idol wasn’t random suppression, it was a *calibration tool*, tuned differently on every world so the Wardens could tell which timelines were drifting. Ondine and Caer are not separate stories — they were always read together.');
+                  api.toast('The marker and the cipher agree on something at last.');
+                });
+              } else if (!s.flags.cipherSeeded) {
+                api.examine('A weathered stone marker, carved with the same faint mark as the idol you found in Rise. Whatever it says, it isn’t in a script anyone here still reads.');
+              } else {
+                api.examine('The marker, now legible where the cipher’s logic fills its gaps. Both worlds were always part of the same design.');
+              }
+            }
           }
         ]
       }
     }
   },
 
-  // Placeholder for future content — referenced by the System Map.
-  __planetTwoLocked: true
+  caer: {
+    name: 'CAER',
+    icon: '🌋',
+    blurb: 'A volcanic forge-world. Its smiths are missing something Ondine’s history already holds.',
+    eraOrder: ['genesis', 'rise', 'present'],
+    eras: {
+
+      genesis: {
+        label: 'GENESIS',
+        hotspots: [
+          {
+            id: 'vent', x: 50, y: 55, icon: '🌋', label: 'Vent',
+            onTap: (s, api) => api.examine('A raw volcanic vent, spitting ash. Nothing here needs your help yet — Caer’s story doesn’t start until Rise.')
+          },
+          {
+            id: 'obsidian', x: 25, y: 68, icon: '🖤', label: 'Obsidian Field',
+            onTap: (s, api) => api.examine('Glassy black rock, cooled fast and sharp-edged. The ground itself looks like it was forged, not formed.')
+          }
+        ]
+      },
+
+      rise: {
+        label: 'RISE',
+        hotspots: [
+          {
+            id: 'smith', x: 30, y: 60, icon: '🧑‍🏭', label: 'Smith', type: 'npc',
+            onTap: (s, api) => {
+              if (!s.flags.wardenRelicPlaced) {
+                api.dialogue('Smith', 'Every forge we build cracks within a season. We’re missing something in the technique — something none of us can name.');
+              } else {
+                api.dialogue('Smith', 'Since that old idol went into the shrine niche, the forges hold true. None of us understand why a sea-carving fixed a fire problem, but it did.');
+              }
+            }
+          },
+          {
+            id: 'niche', x: 62, y: 66, icon: '🕳️', label: 'Shrine Niche',
+            visible: (s) => !s.flags.wardenRelicPlaced,
+            glow: (s) => s.armedItem === 'idol',
+            armedTarget: (s) => s.armedItem === 'idol',
+            onTap: (s, api) => {
+              if (s.armedItem === 'idol') {
+                api.confirm('Set the Sea-Spirit Idol into this empty forge-shrine? It came from another world entirely — you won’t be able to carry it onward once it’s placed.', () => {
+                  api.consumeArmedItem();
+                  api.setFlag('wardenRelicPlaced', true);
+                  api.markDirty('present');
+                  api.addCodex('A Key From Another World', 'You placed Ondine’s Sea-Spirit Idol into a forge-shrine on Caer, a world it was never made for. It fit anyway — proof the same hand shaped both worlds’ histories.');
+                  api.toast('The idol locks into the niche like it was always meant for it.');
+                });
+              } else {
+                api.examine('An empty stone niche, carved to hold something specific — an object-shaped absence. Nothing you’ve found on Caer itself seems to fit.');
+              }
+            }
+          },
+          {
+            id: 'cache', x: 70, y: 60, icon: '📦', label: 'Hidden Cache',
+            visible: (s) => s.flags.wardenRelicPlaced && !s.flags.cipherTaken,
+            glow: (s) => s.flags.wardenRelicPlaced && !s.flags.cipherTaken,
+            onTap: (s, api) => {
+              api.setFlag('cipherTaken', true);
+              api.giveItem('warden_cipher');
+              api.markDirty('present');
+              api.addCodex('What the Niche Was Hiding', 'Setting the idol into the niche exposed a sealed cache behind it: a fire-etched cipher. It doesn’t belong on Caer either — it reads like it’s meant for somewhere else.');
+              api.showItemCard('warden_cipher');
+            }
+          }
+        ]
+      },
+
+      present: {
+        label: 'PRESENT',
+        crisis: (s) => !s.flags.wardenRelicPlaced,
+        hotspots: [
+          {
+            id: 'blacksmith', x: 35, y: 58, icon: '🔨', label: 'Blacksmith', type: 'npc',
+            onTap: (s, api) => {
+              if (!s.flags.wardenRelicPlaced) {
+                api.dialogue('Blacksmith', 'Another forge collapsed this morning. Two apprentices hurt. We’re out of ideas, and running low on patience with each other.');
+              } else {
+                api.dialogue('Blacksmith', 'Steady fire, steady metal, ever since. Take that cipher wherever it needs to go — whatever it is, it isn’t ours to keep.');
+              }
+            }
+          },
+          {
+            id: 'forge', x: 65, y: 72, icon: '\u{1F525}', label: 'Great Forge',
+            onTap: (s, api) => {
+              if (!s.flags.wardenRelicPlaced) api.examine('Warped, cracked, patched over and over. The forge that’s supposed to anchor the whole settlement.');
+              else api.examine('Running clean and even for the first time anyone can remember.');
+            }
+          }
+        ]
+      }
+    }
+  }
 };

@@ -4,7 +4,7 @@ const el = (id) => document.getElementById(id);
 
 function renderStatusbar(state) {
   const planet = PLANETS[state.planet];
-  const era = planet.eras[state.era];
+  const era = planet.eras[state.eraByPlanet[state.planet]];
   el('planet-name').textContent = planet.name;
   el('era-name').textContent = era.label;
 }
@@ -12,10 +12,11 @@ function renderStatusbar(state) {
 function renderScene(state, handlers) {
   const scene = el('scene');
   const planet = PLANETS[state.planet];
-  const era = planet.eras[state.era];
+  const currentEra = state.eraByPlanet[state.planet];
+  const era = planet.eras[currentEra];
 
-  scene.className = 'era-' + state.era;
-  if (state.era === 'present' && !state.flags.reedPlanted) scene.classList.add('crisis');
+  scene.className = 'era-' + currentEra + ' planet-' + state.planet;
+  if (era.crisis && era.crisis(state)) scene.classList.add('crisis');
 
   scene.innerHTML = '';
   era.hotspots.forEach((hs) => {
@@ -35,18 +36,41 @@ function renderScene(state, handlers) {
 function renderTimelineBar(state, handlers) {
   const bar = el('timeline-bar');
   const planet = PLANETS[state.planet];
+  const currentEra = state.eraByPlanet[state.planet];
+  const unlockedEras = state.unlockedEras[state.planet];
   bar.innerHTML = '';
   planet.eraOrder.forEach((eraId) => {
-    const unlocked = !!state.unlockedEras[eraId];
+    const unlocked = !!unlockedEras[eraId];
+    const dirtyKey = state.planet + ':' + eraId;
     const btn = document.createElement('button');
     btn.className = 'era-btn' + (unlocked ? ' unlocked' : ' locked') +
-      (eraId === state.era ? ' active' : '') +
-      (state.dirtyEras && state.dirtyEras[eraId] && eraId !== state.era ? ' changed' : '');
+      (eraId === currentEra ? ' active' : '') +
+      (state.dirtyEras && state.dirtyEras[dirtyKey] && eraId !== currentEra ? ' changed' : '');
     const icon = { genesis: '\u{1F331}', rise: '\u{1F3D8}️', present: '\u{1F3D9}️', ruin: '\u{1F30A}' }[eraId] || '•';
     btn.innerHTML = `<div class="era-icon">${icon}</div><div>${unlocked ? planet.eras[eraId].label : '???'}</div>`;
     btn.disabled = !unlocked;
     btn.addEventListener('click', () => handlers.onJump(eraId));
     bar.appendChild(btn);
+  });
+}
+
+function renderSystemMap(state, handlers) {
+  const box = el('map-planets');
+  box.innerHTML = '';
+  Object.keys(PLANETS).forEach((planetId) => {
+    const planet = PLANETS[planetId];
+    const unlocked = !!state.unlockedPlanets[planetId];
+    const isCurrent = planetId === state.planet;
+    const card = document.createElement('div');
+    card.className = 'planet-card' + (unlocked ? '' : ' locked') + (isCurrent ? ' current' : '');
+    card.innerHTML = `
+      <div class="planet-icon">${planet.icon}</div>
+      <div class="planet-info">
+        <div class="p-name">${unlocked ? planet.name : '???'}</div>
+        <div class="p-desc">${unlocked ? planet.blurb : 'Not yet reachable.'}</div>
+      </div>`;
+    if (unlocked && !isCurrent) card.addEventListener('click', () => handlers.onTravel(planetId));
+    box.appendChild(card);
   });
 }
 
