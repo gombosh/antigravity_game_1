@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>SEEDFALL</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <header id="statusbar">
+    <div id="planet-name">ONDINE</div>
+    <div id="era-name">PRESENT</div>
+    <button id="codex-btn" title="Codex">📜</button>
+  </header>
+
+  <main id="scene"></main>
+
+  <div id="dialogue-overlay" class="panel hidden">
+    <div id="dialogue-speaker"></div>
+    <div id="dialogue-text"></div>
+    <button id="dialogue-next" class="btn">Continue</button>
+  </div>
+
+  <div id="item-card-modal" class="modal hidden">
+    <div class="modal-box">
+      <div id="item-card-icon" class="big-icon"></div>
+      <div id="item-card-name"></div>
+      <div id="item-card-desc"></div>
+      <div id="item-card-actions" class="modal-row"></div>
+      <button id="item-card-close" class="btn">Close</button>
+    </div>
+  </div>
+
+  <div id="confirm-modal" class="modal hidden">
+    <div class="modal-box">
+      <div id="confirm-text"></div>
+      <div class="modal-row">
+        <button id="confirm-yes" class="btn">Confirm</button>
+        <button id="confirm-no" class="btn btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="codex-panel" class="panel hidden">
+    <div class="panel-header">
+      <span>CODEX</span>
+      <button id="codex-close" class="btn btn-small">✕</button>
+    </div>
+    <div id="codex-entries"></div>
+  </div>
+
+  <div id="toast" class="hidden"></div>
+
+  <nav id="timeline-bar"></nav>
+
+  <div id="inventory-tray">
+    <div id="inventory-items"></div>
+    <button id="inventory-tab">🎒 <span id="inventory-count">0</span></button>
+  </div>
+
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/state.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
